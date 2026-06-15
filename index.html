@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-900 14-Day Prep App</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #0f1d30;
+      --panel-2: #162840;
+      --text: #eef5ff;
+      --muted: #cfd9ea;
+      --accent: #67e8f9;
+      --accent2: #8b5cf6;
+      --good: #4ade80;
+      --warn: #fbbf24;
+      --bad: #fb7185;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, #18304f 0%, #0b1626 35%, var(--bg) 100%);
+      min-height: 100vh;
+    }
+    .app { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    header { display: grid; gap: 12px; margin-bottom: 18px; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip { border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); color:var(--muted); border-radius:999px; padding:7px 10px; font-size:13px; }
+    h1 { margin:0; font-size: clamp(2rem, 6vw, 3rem); line-height:1.05; }
+    .lede { color: var(--muted); max-width: 940px; font-size: 1rem; }
+    .grid { display:grid; gap:18px; grid-template-columns: 1.1fr .9fr; }
+    .card { background: linear-gradient(180deg, rgba(13,23,38,.98), rgba(8,14,24,.98)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:18px; box-shadow: 0 18px 30px rgba(0,0,0,.28); }
+    .card h2, .card h3 { margin-top:0; }
+    .progress-wrap { display:grid; gap:10px; }
+    .progress-bar { height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; }
+    .progress-fill { height:100%; width:0; background:linear-gradient(90deg, var(--accent), var(--accent2)); border-radius:999px; transition: width .35s; }
+    .stats { display:grid; grid-template-columns: repeat(3,1fr); gap:10px; }
+    .stat { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:10px; }
+    .stat strong { display:block; font-size:1.2rem; color:#fff; margin-bottom:4px; }
+    .stat span { color:var(--muted); font-size:.95rem; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    .mini { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px; }
+    ul { color:var(--muted); padding-left:18px; margin:6px 0 0; }
+    .tag { display:inline-block; padding:6px 8px; border-radius:999px; background:rgba(103,232,249,.11); border:1px solid rgba(103,232,249,.20); color:#dffcff; font-size:.9rem; }
+    .small { color:var(--muted); font-size:.95rem; }
+    .space { display:grid; gap:10px; }
+    .memory-grid { display:grid; grid-template-columns: repeat(2,1fr); gap:10px; }
+    .memory-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:10px; }
+    .memory-card strong { display:block; margin-bottom:4px; }
+    .actions { display:flex; flex-wrap:wrap; gap:8px; }
+    button { border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:var(--text); border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:600; }
+    button:hover { background:rgba(255,255,255,.12); }
+    button.primary { background:linear-gradient(135deg, var(--accent), #34d399); color:#06211b; border-color:transparent; }
+    .plan-grid { display:grid; gap:12px; margin-top:10px; }
+    .day-card { border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); border-radius:16px; padding:12px; display:grid; gap:8px; }
+    .day-card.done { border-color: rgba(103,232,249,.45); background: rgba(103,232,249,.08); }
+    .day-head { display:flex; justify-content:space-between; align-items:start; gap:10px; }
+    .day-head h4 { margin:0; font-size:1rem; }
+    .muted { color:var(--muted); font-size:.95rem; }
+    .quiz-box { display:grid; gap:10px; }
+    .option { border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); border-radius:12px; padding:10px; cursor:pointer; text-align:left; }
+    .option.selected { border-color: rgba(103,232,249,.45); background: rgba(103,232,249,.10); }
+    .option.correct { border-color: rgba(74,222,128,.55); background: rgba(74,222,128,.10); }
+    .option.wrong { border-color: rgba(251,113,133,.55); background: rgba(251,113,133,.10); }
+    .feedback { color:var(--muted); font-size:.95rem; margin-top:8px; }
+    textarea { width:100%; min-height:90px; border-radius:12px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.04); color:var(--text); padding:10px; resize:vertical; }
+    .footer-note { color:var(--muted); font-size:.95rem; margin-top:8px; }
+    @media (max-width: 1080px) { .grid { grid-template-columns:1fr; } }
+    @media (max-width: 760px) { .stats, .row2, .memory-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="chips">
+        <span class="chip">🧠 AI-900 prep</span>
+        <span class="chip">📅 14-day daily study</span>
+        <span class="chip">🏛️ Memory palace</span>
+        <span class="chip">💾 Local progress saved</span>
+      </div>
+      <h1>AI-900 14-Day Prep Studio</h1>
+      <p class="lede">A self-contained HTML app for Azure AI Fundamentals. It gives you daily exercises, short quizzes, and memory-palace images to anchor each concept in your mind.</p>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Today at a glance</h2>
+        <div class="progress-wrap">
+          <div class="small">Completed <strong id="doneCount">0</strong> of 14 days</div>
+          <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+          <div class="stats">
+            <div class="stat"><strong id="dayLabel">Day 1</strong><span>Current day</span></div>
+            <div class="stat"><strong id="streakLabel">0</strong><span>Days done</span></div>
+            <div class="stat"><strong id="quizScoreLabel">0%</strong><span>Best quiz score</span></div>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="mini">
+            <h3 style="margin-bottom:6px;">Daily ritual</h3>
+            <ul>
+              <li>Read the day’s focus for 10 minutes.</li>
+              <li>Complete the exercise prompt.</li>
+              <li>Picture the memory palace scene.</li>
+            </ul>
+          </div>
+          <div class="mini">
+            <h3 style="margin-bottom:6px;">Study tip</h3>
+            <ul>
+              <li>Use vivid, unusual images.</li>
+              <li>Walk through your home mentally.</li>
+              <li>Say the cue aloud twice.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Memory palace</h2>
+        <p class="small">Place each concept in a different room of your home. The stranger the image, the stronger the recall.</p>
+        <div class="space" id="lociSpace"></div>
+        <div class="memory-grid" id="memoryGrid"></div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:18px;">
+      <div class="day-head">
+        <div>
+          <h2 style="margin-bottom:6px;">14-day study roadmap</h2>
+          <p class="small">Click any day to preview its focus, exercise, and memory cue. Mark it done when you finish.</p>
+        </div>
+        <button id="resetBtn">Reset progress</button>
+      </div>
+      <div id="planList" class="plan-grid"></div>
+    </section>
+
+    <div class="grid" style="margin-top:18px;">
+      <section class="card">
+        <h2>Daily workout</h2>
+        <div id="todayCard"></div>
+        <div class="actions" style="margin-top:10px;">
+          <button id="markDoneBtn" class="primary">Mark today done</button>
+          <button id="nextBtn">Preview next day</button>
+        </div>
+        <h3 style="margin: 12px 0 6px;">Today key terms (memory hooks)</h3>
+        <div id="termBox" class="quiz-box"></div>
+        <h3 style="margin: 12px 0 6px;">Your note for today</h3>
+        <textarea id="noteBox" placeholder="Write one sentence about what you learned today..."></textarea>
+        <div class="footer-note">Tip: Keep your notes short and personal—this helps retrieval later.</div>
+      </section>
+
+      <section class="card">
+        <h2>Quick quiz</h2>
+        <p class="small">Answer three questions tied to the current day. Use it as a quick recall check.</p>
+        <div class="quiz-box" id="quizBox"></div>
+        <div class="actions" style="margin-top:10px;">
+          <button id="checkQuizBtn" class="primary">Check answers</button>
+          <button id="newQuizBtn">New questions</button>
+        </div>
+        <div id="quizFeedback" class="feedback"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const plan = [
+      { day: 1, topic: 'What is AI?', focus: 'Define AI, ML, and generative AI, and describe common uses.', exercise: 'Write a 3-line explanation of AI using one real example from work or daily life.', memory: 'A robot at your front door says “AI = smart help”.' },
+      { day: 2, topic: 'Azure AI services', focus: 'Understand Azure AI Vision, Speech, and Language services.', exercise: 'List 2 Azure AI services and one scenario for each.', memory: 'In the hallway, a microphone, camera, and speech bubble all talk to each other.' },
+      { day: 3, topic: 'Machine learning basics', focus: 'Learn data, model, prediction, and evaluation.', exercise: 'Draw a tiny pipeline: data → model → prediction → feedback.', memory: 'In the kitchen, a chef mixes data, cooks a model, and tastes the prediction.' },
+      { day: 4, topic: 'Responsible AI', focus: 'Bias, fairness, privacy, security, transparency.', exercise: 'Write one risk and one mitigation for an AI tool you might use at work.', memory: 'In the living room, a fair robot balances on a warning sign.' },
+      { day: 5, topic: 'Computer vision', focus: 'Image classification, object detection, OCR, image analysis.', exercise: 'Describe how OCR differs from object detection in two sentences.', memory: 'In the study, a camera reads a label and points to each object.' },
+      { day: 6, topic: 'Natural language processing', focus: 'Sentiment analysis, key phrase extraction, language detection.', exercise: 'Create one sentence for sentiment and one for key phrases.', memory: 'In the bathroom, a mirror reflects happy and sad words.' },
+      { day: 7, topic: 'Speech and translation', focus: 'Speech-to-text, text-to-speech, speech translation, diarization.', exercise: 'Give one real-world scenario for speech translation.', memory: 'In the garage, a loudspeaker translates a foreign phrase into your language.' },
+      { day: 8, topic: 'Generative AI', focus: 'Prompting, grounding, copilots, and content generation.', exercise: 'Write a strong prompt: “Summarize this meeting in 5 bullets.”', memory: 'In the garden, a flower grows when you give it a clear prompt.' },
+      { day: 9, topic: 'Azure AI Foundry', focus: 'Understand models, agents, orchestration.', exercise: 'Explain why a model alone is not enough for a complete AI app.', memory: 'In the attic, tiny tools build a smart assistant workshop.' },
+      { day: 10, topic: 'Security and privacy', focus: 'Data protection, identity, access controls, compliance basics.', exercise: 'List two security controls you would ask for in an AI deployment.', memory: 'In the basement, a lock and a shield guard the AI files.' },
+      { day: 11, topic: 'Cost and performance', focus: 'Scalability, latency, optimization, operations.', exercise: 'Name one way to improve cost or performance in an AI solution.', memory: 'In the office, a speedometer and a price tag sit on the desk.' },
+      { day: 12, topic: 'Business use cases', focus: 'Customer service, support, content generation, document intelligence.', exercise: 'Pick one use case and explain why it helps a business.', memory: 'In the dining room, a service bot serves a plate of answers.' },
+      { day: 13, topic: 'Exam strategy', focus: 'Read questions carefully, eliminate distractors, time management.', exercise: 'Answer five practice questions under 10 minutes and note what you missed.', memory: 'At the front gate, a timer and checklist guide your exam plan.' },
+      { day: 14, topic: 'Final review', focus: 'Mix AI, ML, vision, NLP, responsibility, Azure services.', exercise: 'Create a 1-minute summary using 5 keywords from the entire course.', memory: 'In every room, a tiny AI symbol reminds you of one topic you learned.' }
+    ];
+
+    const termBank = {
+      1: ['AI', 'Machine learning', 'Generative AI', 'Inference'],
+      2: ['Azure AI Vision', 'Azure AI Language', 'Azure AI Speech', 'Azure AI Foundry'],
+      3: ['Training data', 'Features', 'Labels', 'Evaluation metric'],
+      4: ['Fairness', 'Reliability and safety', 'Privacy and security', 'Transparency'],
+      5: ['Image classification', 'Object detection', 'OCR', 'Image captioning'],
+      6: ['Sentiment analysis', 'Key phrase extraction', 'Named entity recognition', 'Language detection'],
+      7: ['Speech-to-text', 'Text-to-speech', 'Translation', 'Speaker diarization'],
+      8: ['Prompt engineering', 'Grounding', 'Token', 'Content filtering'],
+      9: ['Model catalog', 'Agent', 'Orchestration', 'Evaluation'],
+      10: ['RBAC', 'Managed identity', 'Data encryption', 'Compliance'],
+      11: ['Latency', 'Throughput', 'Autoscaling', 'Cost optimization'],
+      12: ['Customer support bot', 'Document intelligence', 'Knowledge mining', 'Recommendation'],
+      13: ['Distractor elimination', 'Question keywording', 'Time boxing', 'Review strategy'],
+      14: ['Vision', 'NLP', 'Speech', 'Responsible AI']
+    };
+
+    const quizBank = {
+      1: [
+        { q: 'Which statement best describes AI?', a: 'Systems that perform tasks that typically require human intelligence.', options: ['A calculator that only adds numbers.', 'Systems that perform tasks that typically require human intelligence.', 'A spreadsheet with formulas.', 'A printer that scans documents.'] },
+        { q: 'What is the main difference between AI and ML?', a: 'AI is the broader field; ML is a technique that trains models on data.', options: ['AI only works on images; ML works on text.', 'AI is the broader field; ML is a technique that trains models on data.', 'AI always needs the internet; ML never does.', 'They are the same thing.'] },
+        { q: 'Why do we use a model?', a: 'To make predictions or decisions based on patterns in data.', options: ['To replace all software.', 'To make predictions or decisions based on patterns in data.', 'To store files in the cloud.', 'To create websites.'] }
+      ],
+      2: [
+        { q: 'Which Azure service is most connected to image analysis?', a: 'Azure AI Vision', options: ['Azure AI Vision', 'Azure AI Search', 'Azure Kubernetes Service', 'Azure Monitor'] },
+        { q: 'What does speech-to-text do?', a: 'Turns spoken words into written text.', options: ['Turns text into images.', 'Turns spoken words into written text.', 'Stores voice recordings.', 'Creates slides.'] },
+        { q: 'What is a common use of language service?', a: 'Extracting key phrases and sentiment from text.', options: ['Managing servers only.', 'Extracting key phrases and sentiment from text.', 'Creating hardware.', 'Encrypting email only.'] }
+      ],
+      3: [
+        { q: 'What is training data?', a: 'The example input used to teach the model.', options: ['The final report.', 'The example input used to teach the model.', 'The internet speed test.', 'The API key.'] },
+        { q: 'What does a model learn from data?', a: 'Patterns that help it make predictions.', options: ['Only file paths.', 'Patterns that help it make predictions.', 'Only Python syntax.', 'Only hardware drivers.'] },
+        { q: 'Why evaluate a model?', a: 'To measure quality and find weaknesses before use.', options: ['To delete the data.', 'To measure quality and find weaknesses before use.', 'To make it larger.', 'To copy the model.'] }
+      ],
+      4: [
+        { q: 'Which Responsible AI principle is about reducing unfair outcomes?', a: 'Fairness', options: ['Latency', 'Fairness', 'Scalability', 'Caching'] },
+        { q: 'Which principle helps users understand model behavior?', a: 'Transparency', options: ['Transparency', 'Tokenization', 'Compression', 'Benchmarking'] },
+        { q: 'What is a practical privacy control?', a: 'Limit access to sensitive data using least privilege.', options: ['Share all training data widely.', 'Limit access to sensitive data using least privilege.', 'Disable identity controls.', 'Store secrets in plain text.'] }
+      ],
+      5: [
+        { q: 'What task labels an entire image with one category?', a: 'Image classification', options: ['OCR', 'Image classification', 'Object tracking', 'Speech diarization'] },
+        { q: 'What task finds and locates items inside an image?', a: 'Object detection', options: ['Object detection', 'Language translation', 'Anomaly logging', 'Topic modeling'] },
+        { q: 'Which capability extracts printed text from images?', a: 'OCR', options: ['OCR', 'Sentiment analysis', 'Vector search', 'Prompt tuning'] }
+      ],
+      6: [
+        { q: 'Which NLP task measures positive/negative tone?', a: 'Sentiment analysis', options: ['Entity linking', 'Sentiment analysis', 'Speech synthesis', 'Image segmentation'] },
+        { q: 'Which task identifies important words in text?', a: 'Key phrase extraction', options: ['Summarization only', 'OCR', 'Key phrase extraction', 'Pixel detection'] },
+        { q: 'Which task identifies language of a sentence?', a: 'Language detection', options: ['Language detection', 'Object detection', 'Text-to-speech', 'RLHF'] }
+      ],
+      7: [
+        { q: 'Speech-to-text converts:', a: 'Audio into written text.', options: ['Text into images.', 'Audio into written text.', 'Models into APIs.', 'Tables into charts.'] },
+        { q: 'Text-to-speech converts:', a: 'Written text into spoken audio.', options: ['Spoken audio into code.', 'Written text into spoken audio.', 'Images into labels.', 'Logs into metrics.'] },
+        { q: 'Speech translation combines:', a: 'Recognition and translation across languages.', options: ['Caching and autoscaling only.', 'Recognition and translation across languages.', 'OCR and object detection.', 'Indexing and retrieval only.'] }
+      ],
+      8: [
+        { q: 'What makes a prompt stronger?', a: 'Clear instructions, context, and output format.', options: ['Making it vague and short.', 'Clear instructions, context, and output format.', 'Only using emojis.', 'Avoiding constraints.'] },
+        { q: 'Grounding means:', a: 'Connecting model output to trusted source data.', options: ['Removing all context.', 'Connecting model output to trusted source data.', 'Increasing image resolution.', 'Using only offline files.'] },
+        { q: 'Why use content filters?', a: 'To help reduce unsafe or disallowed outputs.', options: ['To increase storage costs.', 'To help reduce unsafe or disallowed outputs.', 'To disable moderation.', 'To bypass policy checks.'] }
+      ],
+      9: [
+        { q: 'In Azure AI Foundry, a model is:', a: 'A capability you can evaluate and deploy.', options: ['Only a dashboard widget.', 'A capability you can evaluate and deploy.', 'A firewall rule.', 'A VM image only.'] },
+        { q: 'What does orchestration do?', a: 'Coordinates steps, tools, and model calls in a workflow.', options: ['Deletes logs automatically.', 'Coordinates steps, tools, and model calls in a workflow.', 'Only increases token count.', 'Disables prompts.'] },
+        { q: 'An AI agent typically:', a: 'Uses a model plus tools and instructions to complete tasks.', options: ['Is just raw training data.', 'Uses a model plus tools and instructions to complete tasks.', 'Only stores files.', 'Cannot call APIs.'] }
+      ],
+      10: [
+        { q: 'RBAC is used to:', a: 'Grant least-privilege access by role.', options: ['Increase model temperature.', 'Grant least-privilege access by role.', 'Convert text to speech.', 'Tune OCR accuracy.'] },
+        { q: 'Managed identity helps by:', a: 'Avoiding hard-coded credentials in code.', options: ['Storing passwords in source files.', 'Avoiding hard-coded credentials in code.', 'Disabling authentication.', 'Skipping authorization checks.'] },
+        { q: 'Why encrypt data?', a: 'To protect data at rest and in transit.', options: ['To increase token usage.', 'To protect data at rest and in transit.', 'To make logs public.', 'To remove compliance requirements.'] }
+      ],
+      11: [
+        { q: 'Latency measures:', a: 'How long a request takes to return.', options: ['How many users exist.', 'How long a request takes to return.', 'Only memory size.', 'Only storage cost.'] },
+        { q: 'Throughput measures:', a: 'How many requests can be processed over time.', options: ['The number of UI colors.', 'How many requests can be processed over time.', 'Prompt creativity only.', 'Token safety rating.'] },
+        { q: 'A common cost optimization is:', a: 'Choose the smallest model that meets quality needs.', options: ['Always use the largest model.', 'Choose the smallest model that meets quality needs.', 'Disable monitoring.', 'Run duplicate services continuously.'] }
+      ],
+      12: [
+        { q: 'A chatbot for FAQs is a:', a: 'Customer service use case.', options: ['Computer vision labeling task only.', 'Customer service use case.', 'Network hardening pattern.', 'Storage replication policy.'] },
+        { q: 'Document intelligence is useful for:', a: 'Extracting structured data from invoices/forms.', options: ['Compiling source code.', 'Extracting structured data from invoices/forms.', 'GPU driver updates.', 'DNS routing.'] },
+        { q: 'A business value metric could be:', a: 'Reduced handling time per support ticket.', options: ['Higher typo count.', 'Reduced handling time per support ticket.', 'Lower screen brightness.', 'More manual re-entry steps.'] }
+      ],
+      13: [
+        { q: 'A good exam tactic is to:', a: 'Eliminate clearly wrong options first.', options: ['Pick the longest answer every time.', 'Eliminate clearly wrong options first.', 'Skip reading the question stem.', 'Ignore keywords.'] },
+        { q: 'Time boxing helps by:', a: 'Keeping pace and leaving time for review.', options: ['Forcing random guessing immediately.', 'Keeping pace and leaving time for review.', 'Reducing comprehension.', 'Avoiding all flagged questions.'] },
+        { q: 'When unsure, you should:', a: 'Use clues in wording and compare all options carefully.', options: ['Leave every unsure question blank.', 'Use clues in wording and compare all options carefully.', 'Pick at random without reading.', 'Only choose option A.'] }
+      ],
+      14: [
+        { q: 'Which set best matches core AI-900 domains?', a: 'AI basics, Azure AI services, ML concepts, and Responsible AI.', options: ['Only networking and storage.', 'AI basics, Azure AI services, ML concepts, and Responsible AI.', 'Frontend frameworks only.', 'Database indexing only.'] },
+        { q: 'A final review should prioritize:', a: 'Weak areas found in quiz attempts and notes.', options: ['Only topics you already mastered.', 'Weak areas found in quiz attempts and notes.', 'Ignoring memory cues.', 'Deleting all notes.'] },
+        { q: 'Memory palace recall works best when:', a: 'You mentally walk the same loci in order with vivid imagery.', options: ['You change loci randomly each time.', 'You mentally walk the same loci in order with vivid imagery.', 'You avoid visual images.', 'You skip repetition.'] }
+      ]
+    };
+
+    const loci = ['Front door', 'Hallway', 'Kitchen', 'Living room', 'Study', 'Bathroom', 'Garage', 'Garden', 'Attic', 'Basement', 'Office', 'Dining room', 'Front gate', 'Window'];
+    const locusScenes = [
+      'A robot greets you at the front door.',
+      'A microphone, camera, and speech bubble chat in the hallway.',
+      'A chef cooks a smart model in the kitchen.',
+      'A fair robot balances on a warning sign in the living room.',
+      'A camera reads a label and points to each object in the study.',
+      'A mirror reflects happy and sad words in the bathroom.',
+      'A loudspeaker translates a foreign phrase in the garage.',
+      'A flower grows when you give it a clear prompt in the garden.',
+      'A tiny workshop builds an assistant in the attic.',
+      'A lock and shield guard the AI files in the basement.',
+      'A speedometer and price tag sit on the office desk.',
+      'A service bot serves answers from the dining room.',
+      'A timer and checklist guide your exam plan at the front gate.',
+      'Every window displays a different AI symbol to remember.'
+    ];
+
+    const storageKey = 'ai900-prep-app-v1';
+    const state = JSON.parse(localStorage.getItem(storageKey) || '{"done":[],"bestScore":0,"notes":{},"answers":{}}');
+
+    function getTodayIndex() {
+      const today = new Date();
+      const start = new Date(today.getFullYear(), 0, 0);
+      const diff = today - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay) + 1;
+      return ((dayOfYear - 1) % plan.length) + 1;
+    }
+    function saveState() { localStorage.setItem(storageKey, JSON.stringify(state)); }
+
+    function renderLoci() {
+      document.getElementById('lociSpace').innerHTML = loci.map((loc, i) => `<div class="chip">${i + 1}. ${loc}</div>`).join('');
+      document.getElementById('memoryGrid').innerHTML = loci.map((loc, i) => `<div class="memory-card"><strong>${loc}</strong><span class="small">${locusScenes[i]}</span></div>`).join('');
+    }
+
+    function renderPlan() {
+      document.getElementById('planList').innerHTML = plan.map(item => {
+        const done = state.done.includes(item.day);
+        return `<article class="day-card ${done ? 'done' : ''}">
+          <div class="day-head"><div><h4>Day ${item.day} — ${item.topic}</h4><p class="muted">${item.focus}</p></div><span class="tag">${done ? 'Completed' : 'Ready'}</span></div>
+          <div class="small">Exercise: ${item.exercise}</div>
+          <div class="small">Memory cue: ${item.memory}</div>
+          <div class="actions"><button data-day="${item.day}" class="${done ? '' : 'primary'}">${done ? 'Review this day' : 'Study this day'}</button></div>
+        </article>`;
+      }).join('');
+    }
+
+    function renderToday(day = getTodayIndex()) {
+      const item = plan[day - 1];
+      document.getElementById('dayLabel').textContent = `Day ${day}`;
+      document.getElementById('todayCard').innerHTML = `
+        <div class="tag">${item.topic}</div>
+        <h3 style="margin: 8px 0 4px;">Today’s goal</h3>
+        <p class="small">${item.focus}</p>
+        <h3 style="margin: 8px 0 4px;">Exercise</h3>
+        <p class="small">${item.exercise}</p>
+        <h3 style="margin: 8px 0 4px;">Memory palace cue</h3>
+        <p class="small">${item.memory}</p>
+      `;
+      document.getElementById('doneCount').textContent = state.done.length;
+      document.getElementById('streakLabel').textContent = state.done.length;
+      document.getElementById('progressFill').style.width = `${Math.round((state.done.length / plan.length) * 100)}%`;
+      document.getElementById('quizScoreLabel').textContent = `${state.bestScore || 0}%`;
+      document.getElementById('noteBox').value = state.notes[day] || '';
+      renderTerms(day);
+      renderQuiz(day);
+    }
+
+    function renderTerms(day = getTodayIndex()) {
+      const terms = termBank[day] || [];
+      document.getElementById('termBox').innerHTML = terms.map((term, i) => `
+        <div class="memory-card">
+          <strong>${i + 1}. ${term}</strong>
+          <span class="small">Say this term and connect it to today's memory-palace room.</span>
+        </div>
+      `).join('');
+    }
+
+    function renderQuiz(day = getTodayIndex()) {
+      const questions = (quizBank[day] || quizBank[1]).slice(0, 3);
+      document.getElementById('quizBox').innerHTML = questions.map((item, i) => `
+        <div>
+          <strong>${i + 1}. ${item.q}</strong>
+          <div style="display:grid; gap:8px; margin-top:8px;" data-q="${i}">
+            ${item.options.map(opt => `<button class="option" type="button" data-option="${opt}">${opt}</button>`).join('')}
+          </div>
+        </div>
+      `).join('');
+      state.answers[day] = state.answers[day] || [];
+      saveState();
+      document.getElementById('quizFeedback').textContent = '';
+    }
+
+    function checkQuiz() {
+      const day = getTodayIndex();
+      const questions = (quizBank[day] || quizBank[1]).slice(0, 3);
+      const answers = state.answers[day] || [];
+      let correct = 0;
+      document.querySelectorAll('#quizBox [data-q]').forEach((group, i) => {
+        const q = questions[i];
+        const chosen = answers[i];
+        group.querySelectorAll('.option').forEach(btn => {
+          const isCorrect = btn.textContent === q.a;
+          const isChosen = btn.textContent === chosen;
+          btn.classList.remove('correct', 'wrong');
+          if (isCorrect) btn.classList.add('correct');
+          if (isChosen && !isCorrect) btn.classList.add('wrong');
+        });
+        if (chosen === q.a) correct += 1;
+      });
+      const score = Math.round((correct / questions.length) * 100);
+      state.bestScore = Math.max(state.bestScore, score);
+      saveState();
+      document.getElementById('quizScoreLabel').textContent = `${state.bestScore}%`;
+      document.getElementById('quizFeedback').textContent = `You scored ${score}% on today’s quiz. ${correct === questions.length ? 'Excellent recall!' : 'Review the memory palace cue and try again.'}`;
+    }
+
+    function markTodayDone() {
+      const day = getTodayIndex();
+      if (!state.done.includes(day)) state.done.push(day);
+      state.done.sort((a,b)=>a-b);
+      saveState();
+      renderPlan();
+      renderToday(day);
+    }
+
+    document.getElementById('planList').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-day]');
+      if (!btn) return;
+      const day = Number(btn.dataset.day);
+      renderToday(day);
+    });
+
+    document.getElementById('quizBox').addEventListener('click', (e) => {
+      const btn = e.target.closest('.option');
+      if (!btn) return;
+      const group = btn.parentElement;
+      const qIndex = Number(group.dataset.q);
+      const day = getTodayIndex();
+      state.answers[day] = state.answers[day] || [];
+      state.answers[day][qIndex] = btn.textContent;
+      saveState();
+      group.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+
+    document.getElementById('markDoneBtn').addEventListener('click', markTodayDone);
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const day = getTodayIndex();
+      const next = day % plan.length + 1;
+      renderToday(next);
+    });
+    document.getElementById('checkQuizBtn').addEventListener('click', checkQuiz);
+    document.getElementById('newQuizBtn').addEventListener('click', () => renderQuiz(getTodayIndex()));
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Reset all progress and quiz scores?')) {
+        localStorage.removeItem(storageKey);
+        location.reload();
+      }
+    });
+    document.getElementById('noteBox').addEventListener('input', (e) => {
+      const day = getTodayIndex();
+      state.notes[day] = e.target.value;
+      saveState();
+    });
+
+    renderLoci();
+    renderPlan();
+    renderToday(getTodayIndex());
+  </script>
+</body>
+</html>
